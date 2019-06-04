@@ -129,7 +129,7 @@ OMR::Z::CPU::setSupportsArch(Architecture arch)
 bool
 OMR::Z::CPU::getSupportsHardwareSQRT()
    {
-   return true;
+   return false; 
    }
 
 bool
