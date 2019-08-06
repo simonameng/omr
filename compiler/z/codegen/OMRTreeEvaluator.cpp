@@ -11724,7 +11724,7 @@ OMR::Z::TreeEvaluator::backwardArrayCopySequenceGenerator(TR::Node *node, TR::Co
       *  Current vectorized implementation for backward array copy uses byteLen as index to copy bytes from source to destination in backward direction.
       *  So even if length is known at compile time we can use it to avoid generating residue control logic.
       */
-      generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpOpCode(), node, byteLenReg, 0, TR::InstOpCode::COND_BL, skipResidueLabel, false);
+      generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpOpCode(), node, byteLenReg, static_cast<int32_t>(0), TR::InstOpCode::COND_BL, skipResidueLabel, false);
       generateVRSbInstruction(cg, TR::InstOpCode::VLL , node, vectorBuffer, byteLenReg, generateS390MemoryReference(byteSrcReg, 0, cg));
       generateVRSbInstruction(cg, TR::InstOpCode::VSTL, node, vectorBuffer, byteLenReg, generateS390MemoryReference(byteDstReg, 0, cg), 0);
       generateS390LabelInstruction(cg, TR::InstOpCode::LABEL, node, skipResidueLabel);
@@ -11786,7 +11786,7 @@ OMR::Z::TreeEvaluator::primitiveArraycopyEvaluator(TR::Node* node, TR::CodeGener
       byteLenReg = cg->gprClobberEvaluate(byteLenNode);
       generateS390LabelInstruction(cg, TR::InstOpCode::LABEL, node, cFlowRegionStart);
       cFlowRegionStart->setStartInternalControlFlow();
-      cursor = generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpOpCode(), node, byteLenReg, 0, TR::InstOpCode::COND_BNH, mergeLabel, false);
+      cursor = generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpOpCode(), node, byteLenReg, static_cast<int32_t>(0), TR::InstOpCode::COND_BNH, mergeLabel, false);
       iComment("byteLen <= 0 goto mergeLabel");
       }
 
@@ -13525,13 +13525,13 @@ void arraycmpWithPadHelper::generateVarCLCRemainder()
       {
       generateS390ImmOp(cg, TR::InstOpCode::NG, node, countReg, countReg, (int64_t)0xFF);
 
-      generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::CG, node, countReg, (int32_t)0, TR::InstOpCode::COND_BE, isFoldedIf ? unequalLabel : cmpDoneLabel, false, false);
+      generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::CG, node, countReg, static_cast<int32_t>(0), TR::InstOpCode::COND_BE, isFoldedIf ? unequalLabel : cmpDoneLabel, false, false);
       }
    else
       {
       generateS390ImmOp(cg, TR::InstOpCode::N, node, countReg, countReg, (int32_t)0xFF);
 
-      generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::C, node, countReg, (int32_t)0, TR::InstOpCode::COND_BE, isFoldedIf ? unequalLabel : cmpDoneLabel, false, false);
+      generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::C, node, countReg, static_cast<int32_t>(0), TR::InstOpCode::COND_BE, isFoldedIf ? unequalLabel : cmpDoneLabel, false, false);
       }
 
    generateRIInstruction(cg, TR::Compiler->target.is64Bit() ? TR::InstOpCode::AGHI : TR::InstOpCode::AHI, node, countReg, -1);
@@ -14787,7 +14787,7 @@ OMR::Z::TreeEvaluator::arraytranslateDecodeSIMDEvaluator(TR::Node * node, TR::Co
    generateVRIaInstruction(cg, TR::InstOpCode::VREPI, node, vRangeControl, saturatedRangeControl, 0);
 
    // Branch to the slow path if input is less than 16 bytes as we can only process multiples of 16 in vector registers
-   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen16, 0, TR::InstOpCode::COND_MASK8, processMultiple16BytesEnd, false, false);
+   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen16, static_cast<int32_t>(0), TR::InstOpCode::COND_MASK8, processMultiple16BytesEnd, false, false);
 
    // ----------------- Incoming branch -----------------
 
@@ -14860,7 +14860,7 @@ OMR::Z::TreeEvaluator::arraytranslateDecodeSIMDEvaluator(TR::Node * node, TR::Co
    generateVRScInstruction(cg, TR::InstOpCode::VLGV, node, inputLen, vSaturated, generateS390MemoryReference(7, cg), 0);
 
    // Return in the case of saturation at index 0
-   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen, 0, TR::InstOpCode::COND_CC0, cFlowRegionEnd, false, false);
+   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen, static_cast<int32_t>(0), TR::InstOpCode::COND_CC0, cFlowRegionEnd, false, false);
 
    // VLL and VSTL work on indices so we must subtract 1
    generateRIEInstruction(cg, TR::InstOpCode::getAddLogicalRegRegImmediateOpCode(), node, inputLenMinus1, inputLen, -1);
@@ -14879,7 +14879,7 @@ OMR::Z::TreeEvaluator::arraytranslateDecodeSIMDEvaluator(TR::Node * node, TR::Co
    generateRIInstruction(cg, TR::InstOpCode::getAddHalfWordImmOpCode(), node, inputLenMinus1, 1);
 
    // Branch to copy the unsaturated results from the 1st and 2nd halves
-   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLenMinus1, 15, TR::InstOpCode::COND_CC2, processUnSaturatedInput2, false, false);
+   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLenMinus1, static_cast<int32_t>(15), TR::InstOpCode::COND_CC2, processUnSaturatedInput2, false, false);
 
    // ----------------- Incoming branch -----------------
 
@@ -15067,7 +15067,7 @@ OMR::Z::TreeEvaluator::arraytranslateEncodeSIMDEvaluator(TR::Node * node, TR::Co
    generateVRIaInstruction(cg, TR::InstOpCode::VREPI, node, vRangeControl, saturatedRangeControl, 1);
 
    // Branch to the end if there are no more multiples of 16 chars left to process
-   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen16, 0, TR::InstOpCode::COND_MASK8, processMultiple16CharsEnd, false, false);
+   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen16, static_cast<int32_t>(0), TR::InstOpCode::COND_MASK8, processMultiple16CharsEnd, false, false);
 
    // ----------------- Incoming branch -----------------
 
@@ -15113,7 +15113,7 @@ OMR::Z::TreeEvaluator::arraytranslateEncodeSIMDEvaluator(TR::Node * node, TR::Co
    // VLL and VSTL work on indices so we must subtract 1
    generateRIEInstruction(cg, TR::InstOpCode::getAddLogicalRegRegImmediateOpCode(), node, inputLenMinus1, inputLen, -1);
 
-   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLenMinus1, 7, TR::InstOpCode::COND_CC2, processUnder8CharsEnd, false, false);
+   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLenMinus1, static_cast<int32_t>(7), TR::InstOpCode::COND_CC2, processUnder8CharsEnd, false, false);
 
    // ----------------- Incoming branch -----------------
 
@@ -15192,7 +15192,7 @@ OMR::Z::TreeEvaluator::arraytranslateEncodeSIMDEvaluator(TR::Node * node, TR::Co
    generateVRScInstruction(cg, TR::InstOpCode::VLGV, node, inputLen, vSaturated, generateS390MemoryReference(7, cg), 0);
 
    // Return in the case of saturation at index 0
-   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen, 0, TR::InstOpCode::COND_CC0, cFlowRegionEnd, false, false);
+   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen, static_cast<int32_t>(0), TR::InstOpCode::COND_CC0, cFlowRegionEnd, false, false);
 
    // Divide by 2 as the unit length of each element in the vector register is 2 bytes
    generateRSInstruction(cg, TR::InstOpCode::getShiftRightLogicalSingleOpCode(), node, inputLen, inputLen, 1);
@@ -15594,7 +15594,7 @@ inlineUTF16BEEncodeSIMD(TR::Node *node, TR::CodeGenerator *cg)
    TR::LabelSymbol * processSurrogateEnd   = generateLabelSymbol(cg);
 
    // Branch to the end if there are no more multiples of 8 chars left to process
-   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen16, 0, TR::InstOpCode::COND_MASK8, process8CharsEnd, false, false);
+   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen16, static_cast<int32_t>(0), TR::InstOpCode::COND_MASK8, process8CharsEnd, false, false);
 
    // ----------------- Incoming branch -----------------
 
@@ -15656,7 +15656,7 @@ inlineUTF16BEEncodeSIMD(TR::Node *node, TR::CodeGenerator *cg)
    generateVRScInstruction(cg, TR::InstOpCode::VLGV, node, inputLen, vSurrogate, generateS390MemoryReference(7, cg), 0);
 
    // Return in the case of saturation at index 0
-   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen, 0, TR::InstOpCode::COND_CC0, processUnder8CharsEnd, false, false);
+   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen, static_cast<int32_t>(0), TR::InstOpCode::COND_CC0, processUnder8CharsEnd, false, false);
 
    // VLL and VSTL work on indices so we must subtract 1
    generateRIEInstruction(cg, TR::InstOpCode::getAddLogicalRegRegImmediateOpCode(), node, inputLenMinus1, inputLen, -1);
@@ -15763,7 +15763,7 @@ inlineUTF16BEEncode(TR::Node *node, TR::CodeGenerator *cg)
    processChar4->setStartInternalControlFlow();
 
    // Branch to the end if there are no more multiples of 4 chars left to process
-   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen8, 0, TR::InstOpCode::COND_MASK8, processChar4End, false, false, NULL, dependencies);
+   generateS390CompareAndBranchInstruction(cg, TR::InstOpCode::getCmpLogicalOpCode(), node, inputLen8, static_cast<int32_t>(0), TR::InstOpCode::COND_MASK8, processChar4End, false, false, NULL, dependencies);
 
    // Load 4 input characters from memory and make a copy
    generateRXInstruction(cg, TR::InstOpCode::LG,  node, temp1, generateS390MemoryReference(input, translated, 0, cg));
