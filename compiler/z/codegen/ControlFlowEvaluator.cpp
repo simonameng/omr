@@ -1703,6 +1703,18 @@ OMR::Z::TreeEvaluator::tableEvaluator(TR::Node * node, TR::CodeGenerator * cg)
 
    TR::Register * branchTableReg = NULL;
    TR::Register * reg1;
+
+   if (canSkipBoundTest || node->chkCannotOverflow()) {
+      printf("Hello! You can skip the test now!\n");
+      if (canSkipBoundTest) {
+         printf("I am canSkipBoundTest, I am true \n");
+      }
+      if (node->chkCannotOverflow()) {
+         printf("I am chkCannotOverflow, I am true \n");
+      }
+      printf("{%s}{%s}\n",cg->comp()->signature(),cg->comp()->getHotnessName(cg->comp()->getMethodHotness()));
+   }
+
    // The branch table address may already be in a register
    if (upperBound < node->getNumChildren() &&
        (node->getChild(upperBound)->getOpCodeValue() == TR::loadaddr ||
