@@ -24,6 +24,8 @@
 #include "omr.h"
 #include "omrutil.h"
 
+#include "OMR/Bytes.hpp"
+
 #include <string.h>
 
 #if (defined(LINUX) && defined(S390))
@@ -83,7 +85,7 @@ OMRZeroMemory(void *ptr, uintptr_t length)
 	 * This is correct because sizes smaller then 2 * Data Cache Block size are served already
 	 */
 	if ((uintptr_t)addr & (localCacheLineSize - 1)) {
-		limit = (char *)(((uintptr_t)addr + localCacheLineSize - 1) & ~(localCacheLineSize - 1));
+		limit = (char *)OMR::align((uintptr_t)addr, localCacheLineSize);
 		/* code assumes ptr will have uintptr_t alignment! */
 		/* xlc -O3 will unroll this loop */
 		for (; addr < limit; addr += sizeof(uintptr_t)) {
