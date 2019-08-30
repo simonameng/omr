@@ -34,7 +34,6 @@
 #include "EnvironmentBase.hpp"
 #include "Forge.hpp"
 #include "NonVirtualMemory.hpp"
-#include "OMR/Bytes.hpp"
 
 /**
  * Create and initialize a new instance of NonVirtualMemory.
@@ -72,7 +71,7 @@ MM_NonVirtualMemory::reserveMemory(J9PortVmemParams* params)
 	_baseAddress = _extensions->getForge()->allocate(bytesToAllocate, OMR::GC::AllocationCategory::GC_HEAP, OMR_GET_CALLSITE());
 	void* addressToReturn = _baseAddress;
 	if ((NULL != _baseAddress) && (alignment > 0)) {
-		addressToReturn = (void*)OMR::align((uintptr_t)addressToReturn, alignment);
+		addressToReturn = (void*)(((uintptr_t)addressToReturn + alignment - 1) & ~(alignment - 1));
 	}
 	return addressToReturn;
 }

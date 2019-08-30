@@ -15,7 +15,6 @@
 #define SOURCE_PUGIXML_CPP
 
 #include "pugixml.hpp"
-#include "OMR/Bytes.hpp"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -407,7 +406,7 @@ PUGI__NS_BEGIN
 			size_t size = sizeof(xml_memory_string_header) + length * sizeof(char_t);
 			
 			// round size up to pointer alignment boundary
-			size_t full_size = OMR::align(size, sizeof(void*));
+			size_t full_size = (size + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
 
 			xml_memory_page* page;
 			xml_memory_string_header* header = static_cast<xml_memory_string_header*>(allocate_memory(full_size, page));
@@ -6004,7 +6003,7 @@ namespace pugi
 		PUGI__STATIC_ASSERT(sizeof(impl::xml_memory_page) + sizeof(impl::xml_document_struct) + impl::xml_memory_page_alignment - sizeof(void*) <= sizeof(_memory));
 
 		// align upwards to page boundary
-		void* page_memory = reinterpret_cast<void*>(OMR::align(reinterpret_cast<uintptr_t>(_memory), impl::xml_memory_page_alignment));
+		void* page_memory = reinterpret_cast<void*>((reinterpret_cast<uintptr_t>(_memory) + (impl::xml_memory_page_alignment - 1)) & ~(impl::xml_memory_page_alignment - 1));
 		// prepare page structure
 		impl::xml_memory_page* page = impl::xml_memory_page::construct(page_memory);
 		assert(page);
@@ -6542,7 +6541,7 @@ PUGI__NS_BEGIN
 		void* allocate_nothrow(size_t size)
 		{
 			// align size so that we're able to store pointers in subsequent blocks
-			size = OMR::align(size, sizeof(void*));
+			size = (size + sizeof(void*) - 1) & ~(sizeof(void*) - 1);
 
 			if (_root_size + size <= _root->capacity)
 			{
@@ -6592,8 +6591,8 @@ PUGI__NS_BEGIN
 		void* reallocate(void* ptr, size_t old_size, size_t new_size)
 		{
 			// align size so that we're able to store pointers in subsequent blocks
-			old_size = OMR::align(old_size, sizeof(void*));
-			new_size = OMR::align(new_size, sizeof(void*));
+			old_size = (old_size + sizeof(void*) - 1) & ~(sizeof(void*) - 1);
+			new_size = (new_size + sizeof(void*) - 1) & ~(sizeof(void*) - 1);
 
 			// we can only reallocate the last object
 			assert(ptr == 0 || static_cast<char*>(ptr) + old_size == _root->data + _root_size);
