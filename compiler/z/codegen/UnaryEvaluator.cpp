@@ -309,20 +309,22 @@ TR::Register *
 OMR::Z::TreeEvaluator::dsqrtEvaluator(TR::Node * node, TR::CodeGenerator * cg)
    {
    TR::Node * firstChild = node->getFirstChild();
-   TR::Register * targetRegister = cg->allocateRegister(TR_FPR);
+   TR::Register * targetRegister = NULL;
+   TR::Register * opRegister = cg->evaluate(firstChild);
 
-   if (firstChild->isSingleRefUnevaluated() && firstChild->getOpCodeValue() == TR::dloadi)
+   if (cg->canClobberNodesRegister(firstChild))
       {
-      generateRXEInstruction(cg, TR::InstOpCode::SQDB, node, targetRegister, generateS390MemoryReference(firstChild, cg), 0);
+      targetRegister = opRegister;
       }
    else
       {
-      TR::Register * opRegister = cg->evaluate(firstChild);
-      generateRRInstruction(cg, TR::InstOpCode::SQDBR, node, targetRegister, opRegister);
-      cg->decReferenceCount(firstChild);
+      targetRegister = cg->allocateRegister(TR_FPR);
       }
+   generateRRInstruction(cg, TR::InstOpCode::SQDBR, node, targetRegister, opRegister);
+
    node->setRegister(targetRegister);
-   return targetRegister;
+   cg->decReferenceCount(firstChild);
+   return node->getRegister();
    }
 
 TR::Register *
