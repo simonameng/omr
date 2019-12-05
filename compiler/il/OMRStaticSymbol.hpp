@@ -112,6 +112,8 @@ public:
    template <typename AllocatorType>
    static TR::StaticSymbol * createNamed(AllocatorType m, TR::DataType d, void * addr, const char * name);
 
+   static void createNamed(TR::StaticSymbol *sym, const char * name);
+
    const char *getName();
 
 private:

@@ -67,6 +67,11 @@ TR::StaticSymbol * OMR::StaticSymbol::createNamed(AllocatorType m, TR::DataType 
    return sym;
    }
 
+void OMR::StaticSymbol::createNamed(TR::StaticSymbol *sym, const char * name)
+   {
+      sym->makeNamed(name);
+   }
+
 
 const char *
 OMR::StaticSymbol::getName()
