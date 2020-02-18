@@ -955,7 +955,7 @@ bool OMR::ValuePropagation::transformUnsafeCopyMemoryCall(TR::Node *arraycopyNod
    TR::Node *ttNode = tt->getNode();
 
 #ifdef J9_PROJECT_SPECIFIC
-   if (comp()->canTransformUnsafeCopyToArrayCopy()
+   /* if (comp()->canTransformUnsafeCopyToArrayCopy()
          && arraycopyNode->getOpCode().isCall()
          && arraycopyNode->getSymbol()->isMethod()
          && arraycopyNode->getSymbol()->castToMethodSymbol()->getRecognizedMethod() == TR::sun_misc_Unsafe_copyMemory)
@@ -1026,7 +1026,7 @@ bool OMR::ValuePropagation::transformUnsafeCopyMemoryCall(TR::Node *arraycopyNod
 
          return true;
          }
-      }
+      } */
 #endif
    return false;
 
