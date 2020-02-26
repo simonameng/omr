@@ -1021,8 +1021,10 @@ bool OMR::ValuePropagation::transformUnsafeCopyMemoryCall(TR::Node *arraycopyNod
 
          removeNode(oldArraycopyNode);
 
-         if ((srcOffLow >= dstOffHigh) || (srcOffHigh+copyLenHigh) <= dstOffLow)
+         if ((srcOffLow >= dstOffHigh) || (srcOffHigh+copyLenHigh) <= dstOffLow) {
             arraycopyNode->setForwardArrayCopy(true);
+            TR_ASSERT_FATAL(false, "Simona: Assert hit!");
+         }
 
          return true;
          }
