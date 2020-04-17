@@ -220,6 +220,13 @@ class Validate_ireturnReturnType : public NodeValidationRule
    void validate(TR::Node *node);
    };
 
+class Validate_axaddEnvironment : public NodeValidationRule
+   {
+   public:
+   Validate_axaddEnvironment(TR::Compilation *comp);
+
+   void validate(TR::Node *node);
+   };
 /* NOTE: Please add any new NodeValidationRules here */
 
 } //namespace TR

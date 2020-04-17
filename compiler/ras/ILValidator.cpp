@@ -130,7 +130,8 @@ TR::ILValidator::ILValidator(TR::Compilation *comp)
         { 
           new  (comp->trHeapMemory()) TR::ValidateChildCount(_comp),
           new  (comp->trHeapMemory()) TR::ValidateChildTypes(_comp),
-          new  (comp->trHeapMemory()) TR::Validate_ireturnReturnType(_comp)
+          new  (comp->trHeapMemory()) TR::Validate_ireturnReturnType(_comp),
+          new  (comp->trHeapMemory()) TR::Validate_axaddEnvironment(_comp),
         };
      /**
       * NOTE: Please initialize any new *ValidationRule here!

@@ -496,3 +496,24 @@ void TR::Validate_ireturnReturnType::validate(TR::Node *node)
          }
       }
    }
+
+/**
+ * Validate_ireturnReturnType (a TR::NodeValidationRule):
+ */
+TR::Validate_axaddEnvironment::Validate_axaddEnvironment(TR::Compilation *comp)
+   : TR::NodeValidationRule(comp, OMR::validate_axaddEnvironment)
+   {
+   }
+
+void TR::Validate_axaddEnvironment::validate(TR::Node *node)
+   {
+   auto opcode = node->getOpCode();
+   if (opcode.getOpCodeValue() == TR::aiadd)
+      {
+      TR::checkILCondition(node, comp()->target().is32Bit(), comp(), "aiadd should not be seen on 64-bit");
+      }
+   if (opcode.getOpCodeValue() == TR::aladd)
+      {
+      TR::checkILCondition(node, comp()->target().is64Bit(), comp(), "aladd should not be seen on 32-bit");
+      }
+   }

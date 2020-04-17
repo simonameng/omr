@@ -34,6 +34,7 @@ enum ILValidationRule
    validateLivenessBoundaries,
    validateNodeRefCountWithinBlock,
    validate_ireturnReturnType,
+   validate_axaddEnvironment,
    /**
     * NOTE: Please add `id`s for any new ILValidationRule here!
     *       This needs to match the implementation of said *ILValidationRule.
