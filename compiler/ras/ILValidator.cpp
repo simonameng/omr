@@ -65,6 +65,7 @@ const OMR::ILValidationStrategy OMR::preCodegenValidationStrategy[] =
    { OMR::validateLivenessBoundaries                },
    { OMR::validateNodeRefCountWithinBlock           },
    { OMR::validate_ireturnReturnType                },
+   { OMR::validate_axaddEnvironment},
    { OMR::endRules                                  }
    };
 

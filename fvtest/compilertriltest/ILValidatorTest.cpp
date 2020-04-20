@@ -22,7 +22,8 @@
 #include "JitTest.hpp"
 #include "default_compiler.hpp"
 #include "compile/OMRCompilation.hpp"
-
+#include "infra/ILWalk.hpp"
+#include "ras/IlVerifier.hpp"
 #include <string>
 
 class IllformedTrees : public TRTest::JitTest, public ::testing::WithParamInterface<std::string> {};
@@ -56,6 +57,48 @@ INSTANTIATE_TEST_CASE_P(ILValidatorTest, IllformedTrees, ::testing::Values(
     "(method return=Int64 (block (lreturn (sshl (sconst 1) (iconst 1)))))", // lreturn incorrect type. 
     "(method return=Int64 (block (lreturn (sconst 1) )))"                   // lreturn incorrect type. 
     ));
+
+class InvalidPlatformVerifier : public TR::IlVerifier
+   {
+   public:
+   int32_t verifyNode(TR::Node *node)
+      {
+      return node->getOpCode().isArrayRef();
+      }
+
+   int32_t verify(TR::ResolvedMethodSymbol *sym)
+      {
+      for(TR::PreorderNodeIterator iter(sym->getFirstTreeTop(), sym->comp()); iter.currentTree(); ++iter)
+         {
+         int32_t rtn = verifyNode(iter.currentNode());
+         if(rtn)
+            return rtn;
+         }
+
+      return 0;
+      }
+   };
+
+#ifdef OMR_ENV_DATA64
+class Invalid64BitPlatform : public TRTest::JitTest, public ::testing::WithParamInterface<std::string> {};
+
+TEST_P(Invalid64BitPlatform, Fail64BitCompilation) {
+   auto inputTrees = GetParam();
+   auto trees = parseString(inputTrees.c_str());
+
+   ASSERT_NOTNULL(trees);
+
+   Tril::DefaultCompiler compiler(trees);
+   InvalidPlatformVerifier verifier;
+
+   ASSERT_EQ(compiler.compileWithVerifier(&verifier), COMPILATION_FAILED)  
+         << "Compilation did not fail due to unexpected platform";
+}
+
+INSTANTIATE_TEST_CASE_P(ILValidatorTest, Invalid64BitPlatform, ::testing::Values(
+   "(method return=Address (block (areturn (aiadd (aconst 4) (iconst 1)))))"                  
+   ));
+#endif
 
 class WellformedTrees : public TRTest::JitTest, public ::testing::WithParamInterface<std::string> {};
 
