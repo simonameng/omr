@@ -91,7 +91,7 @@ TEST_P(Invalid64BitPlatform, Fail64BitCompilation) {
    Tril::DefaultCompiler compiler(trees);
    InvalidPlatformVerifier verifier;
 
-   ASSERT_EQ(compiler.compileWithVerifier(&verifier), COMPILATION_FAILED)  
+   ASSERT_EQ(compiler.compileWithVerifier(&verifier), COMPILATION_IL_VALIDATION_FAILURE)  
          << "Compilation did not fail due to unexpected platform";
 }
 

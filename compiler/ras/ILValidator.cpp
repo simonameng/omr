@@ -50,6 +50,7 @@ const OMR::ILValidationStrategy OMR::postILgenValidatonStrategy[] =
    { OMR::validateChildTypes              },
    { OMR::validateLivenessBoundaries      },
    { OMR::validateNodeRefCountWithinBlock },
+   { OMR::validate_axaddEnvironment       },
    { OMR::endRules                        }
    };
 
@@ -65,7 +66,6 @@ const OMR::ILValidationStrategy OMR::preCodegenValidationStrategy[] =
    { OMR::validateLivenessBoundaries                },
    { OMR::validateNodeRefCountWithinBlock           },
    { OMR::validate_ireturnReturnType                },
-   { OMR::validate_axaddEnvironment},
    { OMR::endRules                                  }
    };
 
@@ -121,7 +121,8 @@ TR::ILValidator::ILValidator(TR::Compilation *comp)
      TR::MethodValidationRule* temp_method_rules[] =
         {
           new  (comp->trHeapMemory()) TR::SoundnessRule(_comp),
-          new  (comp->trHeapMemory()) TR::ValidateLivenessBoundaries(_comp)
+          new  (comp->trHeapMemory()) TR::ValidateLivenessBoundaries(_comp),
+          new  (comp->trHeapMemory()) TR::Validate_axaddEnvironment(_comp),
         };
 
      TR::BlockValidationRule* temp_block_rules[] =
@@ -132,7 +133,6 @@ TR::ILValidator::ILValidator(TR::Compilation *comp)
           new  (comp->trHeapMemory()) TR::ValidateChildCount(_comp),
           new  (comp->trHeapMemory()) TR::ValidateChildTypes(_comp),
           new  (comp->trHeapMemory()) TR::Validate_ireturnReturnType(_comp),
-          new  (comp->trHeapMemory()) TR::Validate_axaddEnvironment(_comp),
         };
      /**
       * NOTE: Please initialize any new *ValidationRule here!
