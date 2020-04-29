@@ -58,6 +58,7 @@ INSTANTIATE_TEST_CASE_P(ILValidatorTest, IllformedTrees, ::testing::Values(
     "(method return=Int64 (block (lreturn (sconst 1) )))"                   // lreturn incorrect type. 
     ));
 
+
 class InvalidPlatformVerifier : public TR::IlVerifier
    {
    public:
